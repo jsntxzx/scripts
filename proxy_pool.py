@@ -88,7 +88,7 @@ def save_proxy(proxy):
 def create_database(name):
     conn = sqlite3.connect(name)
     c = conn.cursor()
-    c.execute("create table ip_pool(proxy_name varchar(20), proxy_response float(6), update_time timestamp)")
+    c.execute("create table ip_pool(proxy_name varchar(20) unique, proxy_response float(6), update_time timestamp)")
     logging.info("creating database %s.db " % name)
     conn.commit()
     conn.close()
@@ -98,8 +98,8 @@ def insert_into_database(name, proxy_name, proxy_response):
     conn = sqlite3.connect(name)
     c = conn.cursor()
     n = datetime.datetime.now()
-    c.execute("insert into ip_pool(proxy_name, proxy_response, update_time) values(?,?,?)",(proxy_name, proxy_response, n))
-    logging.info("save proxy %s " % proxy_name)    
+    c.execute("insert or ignore into ip_pool(proxy_name, proxy_response, update_time) values(?,?,?)",(proxy_name, proxy_response, n))
+    logging.info("save proxy %s " % proxy_name)
     conn.commit()
     conn.close()
 
